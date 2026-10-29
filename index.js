@@ -1,35 +1,27 @@
-import http from 'node:http';
-import fs from 'node:fs';
+import express from 'express';
+import path from 'node:path';
 
+const app = express();
 const port = process.env.PORT || 8080;
 
-// Create a local server to receive data from
-const server = http.createServer((request, response) => {
-    response.setHeader('Content-Type', 'text/html');
-    if (request.url == "/") {
-        response.statusCode = 200;
-        const index = fs.readFileSync('./index.html');
-        response.write(index);
-    }
-    else if (request.url == "/about") {
-        response.statusCode = 200;
-        const about = fs.readFileSync('./about.html');
-        response.write(about);
-    }
-    else if (request.url == "/contact-me") {
-        response.statusCode = 200;
-        const contact_me = fs.readFileSync('./contact-me.html');
-        response.write(contact_me);
-    }
-    else {
-        response.statusCode = 404;
-        const err404 = fs.readFileSync('./404.html');
-        response.write(err404);
-    }
-    console.log(response.statusCode);
-    response.end();
+app.get('/', (req, res) => {
+    res.sendFile(path.join(import.meta.dirname, "./index.html"));
 });
 
-server.listen(port, () => {
-    console.log(port);
+app.get('/about', (req, res) => {
+    res.sendFile(path.join(import.meta.dirname, "./about.html"));
+});
+
+app.get('/contact-me', (req, res) => {
+    res.sendFile(path.join(import.meta.dirname, "./contact-me.html"));
+});
+
+app.use((req, res, next) => {
+    // Set status to 404 and send your HTML file or template
+    res.status(404).sendFile(path.join(import.meta.dirname, '404.html'));
+});
+
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`);
 });
